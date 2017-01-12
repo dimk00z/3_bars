@@ -19,10 +19,10 @@ def load_data():
     #загружаем архив
     filename = 'bars.zip'
     req = requests.get(url)
-    file = open(filename, 'wb')
+    file_bars = open(filename, 'wb')
     for chunk in req.iter_content(100000):
-        file.write(chunk)
-    file.close()
+        file_bars.write(chunk)
+    file_bars.close()
     bars = []
     if zipfile.is_zipfile('bars.zip'):
        zipfile.ZipFile('bars.zip').extractall()
@@ -30,10 +30,10 @@ def load_data():
        replace(zipfile.ZipFile('bars.zip').namelist()[0],"bars.json")
        remove('bars.zip')
        json_file=json.loads(open("bars.json").read())
-       for jObject in json_file:
-           bar = BarClass(jObject['Name'],jObject['Address'],jObject['SeatsCount'],
-                      jObject['geoData']['coordinates'][0],
-                      jObject['geoData']['coordinates'][1] )
+       for j_object in json_file:
+           bar = BarClass(j_object['Name'],j_object['Address'],j_object['SeatsCount'],
+                      j_object['geoData']['coordinates'][0],
+                      j_object['geoData']['coordinates'][1] )
            bars.append(bar)
     print("--------------------------------------")
     print("Загруженно " +str(len(bars)) +" баров!")
@@ -61,10 +61,10 @@ def distance_between_points(lon1, lat1, lon2, lat2):
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
     dlon = lon2 - lon1 
     dlat = lat2 - lat1 
-    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-    c = 2 * asin(sqrt(a)) 
-    r = 6371
-    return c * r
+    result = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    result = 2 * asin(sqrt(result)) 
+    radius = 6371
+    return result * radius
 
 def get_closest_bar(bars, longitude, latitude):
     distance = distance_between_points(longitude,latitude,bars[0].longitude,bars[0].latitude)
