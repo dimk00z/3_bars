@@ -6,7 +6,7 @@
 
 Для работы скачивать bars.json не нужно, должен подгрузиться сам
 
-$ python bars.py # 
+$ python bars.py 
 ```
 # Пример работы скрипта
 python bars.py
