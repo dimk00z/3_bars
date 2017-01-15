@@ -1,13 +1,14 @@
 # Ближайшие бары
 
 Решение 3 задачи https://devman.org/challenges/3/
-````
+
 # Как запустить
 
 Для работы скачивать bars.json не нужно, должен подгрузиться сам
 
-$ python bars.py # possibly requires call of python3 executive instead of just python
-# FIXME вывести пример ответа скрипта
+$ python bars.py # 
+```
+# Пример работы скрипта
 python bars.py
 
 Добро пожаловать!
