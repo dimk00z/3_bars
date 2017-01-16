@@ -6,6 +6,7 @@ from math import radians, cos, sin, asin, sqrt
 
 
 class BarClass(object):
+
     def __init__(self, name, adress, seats_count, longitude, latitude):
         self.name = name
         self.adress = adress
@@ -14,11 +15,9 @@ class BarClass(object):
         self.longitude = longitude
 
 
-def download_bars_zip_from_opmosru():
-    url = 'http://op.mos.ru/EHDWSREST/catalog/export/get?id=84505'
-    filename = 'bars.zip'
+def download_bars_zip_from_opmosru(url, zip_file_name):
     req = requests.get(url)
-    file_bars = open(filename, 'wb')
+    file_bars = open(zip_file_name, 'wb')
     for chunk in req.iter_content(100000):
         file_bars.write(chunk)
     file_bars.close()
@@ -26,13 +25,13 @@ def download_bars_zip_from_opmosru():
         return file_bars
 
 
-def unzip_json(zip_file_name,json_file_name):
+def unzip_json(zip_file_name, json_file_name):
     if zipfile.is_zipfile(zip_file_name):
-       zipfile.ZipFile(zip_file_name).extractall()
-       #в архиве один файл, распаковываем и переименовываем его
-       replace(zipfile.ZipFile(zip_file_name).namelist()[0], json_file_name)
-       remove(zip_file_name)
-       return True
+        zipfile.ZipFile(zip_file_name).extractall()
+        # в архиве один файл, распаковываем и переименовываем его
+        replace(zipfile.ZipFile(zip_file_name).namelist()[0], json_file_name)
+        remove(zip_file_name)
+        return True
 
 
 def load_bars_data_from_json(json_file_name):
@@ -40,10 +39,10 @@ def load_bars_data_from_json(json_file_name):
     try:
         json_file = json.loads(open(json_file_name).read())
         for j_object in json_file:
-           bar = BarClass(j_object['Name'], j_object['Address'], j_object['SeatsCount'],
-                          j_object['geoData']['coordinates'][0],
-                          j_object['geoData']['coordinates'][1])
-           bars.append(bar)
+            bar = BarClass(j_object['Name'], j_object['Address'], j_object['SeatsCount'],
+                           j_object['geoData']['coordinates'][0],
+                           j_object['geoData']['coordinates'][1])
+            bars.append(bar)
         return bars
     except ValueError:
         return None
@@ -91,18 +90,22 @@ def get_closest_bar(bars, longitude, latitude):
 if __name__ == '__main__':
     print("Добро пожаловать!")
     print("Сейчас попробую загрузить бары с http://op.mos.ru")
-    bars_zip = download_bars_zip_from_opmosru()
+    bars_zip = download_bars_zip_from_opmosru(
+        'http://op.mos.ru/EHDWSREST/catalog/export/get?id=84505',
+        "bars.zip")
     if bars_zip:
-        unzip_json("bars.zip","bars.json")
+        unzip_json("bars.zip", "bars.json")
         bars_data = load_bars_data_from_json("bars.json")
         if bars_data:
             biggest_bar = get_biggest_bar(bars_data)
             smallest_bar = get_smallest_bar(bars_data)
             print()
-            print("Самый большой бар : " + (biggest_bar.name) + " c " + str(biggest_bar.seats_count) +
-                  " количеством посадочных мест" + "по адресу: " + biggest_bar.adress)
-            print("Самый мАленький бар : " + (smallest_bar.name) + " c " + str(smallest_bar.seats_count) +
-                  " количеством посадочных мест" + "по адресу: " + smallest_bar.adress)
+            print("Самый большой бар : " + (biggest_bar.name) + " c " +
+                  str(biggest_bar.seats_count) + " количеством посадочных мест"
+                  + "по адресу: " + biggest_bar.adress)
+            print("Самый мАленький бар : " + (smallest_bar.name) + " c " +
+                  str(smallest_bar.seats_count) + " количеством посадочных мест" +
+                  "по адресу: " + smallest_bar.adress)
             answer = ""
             while answer != "n":
                 answer = input(
