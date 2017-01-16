@@ -39,7 +39,8 @@ def load_bars_data_from_json(json_file_name):
     try:
         json_file = json.loads(open(json_file_name).read())
         for j_object in json_file:
-            bar = BarClass(j_object['Name'], j_object['Address'], j_object['SeatsCount'],
+            bar = BarClass(j_object['Name'], j_object['Address'],
+                           j_object['SeatsCount'],
                            j_object['geoData']['coordinates'][0],
                            j_object['geoData']['coordinates'][1])
             bars.append(bar)
@@ -65,7 +66,6 @@ def get_smallest_bar(bars):
 
 
 def distance_between_points(lon1, lat1, lon2, lat2):
-   # Формула "гаверсинуса"
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
     dlon = lon2 - lon1
     dlat = lat2 - lat1
@@ -101,10 +101,12 @@ if __name__ == '__main__':
             smallest_bar = get_smallest_bar(bars_data)
             print()
             print("Самый большой бар : " + (biggest_bar.name) + " c " +
-                  str(biggest_bar.seats_count) + " количеством посадочных мест"
-                  + "по адресу: " + biggest_bar.adress)
+                  str(biggest_bar.seats_count) +
+                  " количеством посадочных мест" +
+                  "по адресу: " + biggest_bar.adress)
             print("Самый мАленький бар : " + (smallest_bar.name) + " c " +
-                  str(smallest_bar.seats_count) + " количеством посадочных мест" +
+                  str(smallest_bar.seats_count) +
+                  " количеством посадочных мест" +
                   "по адресу: " + smallest_bar.adress)
             answer = ""
             while answer != "n":
