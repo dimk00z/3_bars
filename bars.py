@@ -30,18 +30,15 @@ def load_json_from_file(filepath):
 
 
 def load_bars_data_from_json(json_file_name):
-    # try:
     json_file = load_json_from_file(json_file_name)
     bars = []
     for j_object in json_file:
-
         bars.append({'name': j_object['Name'],
                      'address': j_object['Address'],
                      'seats_count': j_object['SeatsCount'],
                      'longitude': j_object['geoData']['coordinates'][0],
                      'latitude': j_object['geoData']['coordinates'][1]
                      })
-
     return bars
 
 
@@ -57,15 +54,17 @@ def distance_between_points(lon1, lat1, lon2, lat2):
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
     dlon = lon2 - lon1
     dlat = lat2 - lat1
-    result = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
-    result = 2 * asin(sqrt(result))
+    sub_result = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    sub_result = 2 * asin(sqrt(sub_result))
     earth_radius = 6371
-    return result * earth_radius
+    return sub_result * earth_radius
 
 
 def get_closest_bar(bars, longitude, latitude):
-    distance = distance_between_points(longitude, latitude, bars[
-                                       0]["longitude"], bars[0]["latitude"])
+    distance = distance_between_points(longitude,
+                                       latitude,
+                                       bars[0]["longitude"],
+                                       bars[0]["latitude"])
     closest_bar = bars[0]
     for bar in bars[1:]:
         distance_to_bar = distance_between_points(
@@ -91,10 +90,8 @@ if __name__ == '__main__':
     bars_zip = download_bars_zip_from_opmosru(
         'http://op.mos.ru/EHDWSREST/catalog/export/get?id=84505',
         "bars.zip")
-    if bars_zip:
-        unzip_json("bars.zip", "bars.json")
+    if unzip_json("bars.zip", "bars.json"):
         bars_data = load_bars_data_from_json("bars.json")
-        print(bars_data)
         if bars_data:
             biggest_bar = get_biggest_bar(bars_data)
             smallest_bar = get_smallest_bar(bars_data)
@@ -114,5 +111,5 @@ if __name__ == '__main__':
                                                       longitude, latitude)
                         print("Ближайший бар :" + string_bar(closest_bar))
                     except ValueError:
-                        print("Возможно ввод некорректен")
+                        print("Ввод некорректен")
     print("Много не пейте=)")
