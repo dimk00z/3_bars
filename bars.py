@@ -55,25 +55,26 @@ def string_bar(bar):
                               str(bar['geoData']['coordinates'][1])))
 
 
+def closest_bar_print(bars):
+    answer = ""
+    while answer != "n":
+        try:
+            print("Поиск ближайшего бара:")
+            longitude = float(input("Введите долготу: "))
+            latitude = float(input("Введите широту: "))
+            closest_bar = get_closest_bar(bars, longitude, latitude)
+            print("Ближайший бар :" + string_bar(closest_bar))
+            answer = input("Следующий поиск? (y/n) :").lower()
+        except ValueError:
+            print("Ввод некорректен")
+
+
 if __name__ == '__main__':
     print("Добро пожаловать!")
     bars = load_bars_from_json(input("Введите путь к json-файлу\n"))
     if bars:
         print("Самый большой бар : " + string_bar(get_biggest_bar(bars)))
         print("Самый маленький бар : " + string_bar(get_smallest_bar(bars)))
-        answer = ""
-        while answer != "n":
-            answer = input(
-                "Вы желаете узнать ближайший бар \
-к заданным координатам? (y/n) :").lower()
-            if answer == "y":
-                try:
-                    longitude = float(input("Введите долготу: "))
-                    latitude = float(input("Введите широту: "))
-                    closest_bar = get_closest_bar(bars,
-                                                  longitude, latitude)
-                    print("Ближайший бар :" + string_bar(closest_bar))
-                except ValueError:
-                    print("Ввод некорректен")
+        closest_bar_print(bars)
     else:
         print("Файл не найден")
