@@ -48,13 +48,11 @@ def get_closest_bar(bars, longitude, latitude):
 
 
 def string_bar(bar):
-    return (("{} с {} количеством посадочных мест по адресу {} \n" +
-             "широта: {}, долгота {}").format(bar['Name'], bar["SeatsCount"],
-                                              bar["Address"],
-                                              str(bar['geoData'][
-                                                  'coordinates'][0]),
-                                              str(bar['geoData'][
-                                                  'coordinates'][1])))
+    string_bar = "{} с {} количеством посадочных мест по адресу {} \n \
+широта: {}, долгота {}"
+    return (string_bar.format(bar['Name'], bar["SeatsCount"], bar["Address"],
+                              str(bar['geoData']['coordinates'][0]),
+                              str(bar['geoData']['coordinates'][1])))
 
 
 if __name__ == '__main__':
