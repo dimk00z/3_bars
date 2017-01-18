@@ -1,6 +1,4 @@
 import json
-import requests
-import zipfile
 from os import replace, remove, path
 from math import radians, cos, sin, asin, sqrt
 
