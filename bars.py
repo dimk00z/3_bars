@@ -5,7 +5,7 @@ from math import radians, cos, sin, asin, sqrt
 EARTH_RADIUS = 6371
 
 
-def load_bars_data_from_json(json_file_name):
+def load_bars_from_json(json_file_name):
     if not path.exists(json_file_name):
         return None
     with open(json_file_name, 'r', encoding='cp1251') as file_handler:
@@ -49,8 +49,7 @@ def get_closest_bar(bars, longitude, latitude):
 
 def string_bar(bar):
     return (("{} с {} количеством посадочных мест по адресу {} \n" +
-             "широта: {}, долгота {}").format(bar['Name'],
-                                              bar["SeatsCount"],
+             "широта: {}, долгота {}").format(bar['Name'], bar["SeatsCount"],
                                               bar["Address"],
                                               str(bar['geoData'][
                                                   'coordinates'][0]),
@@ -60,7 +59,7 @@ def string_bar(bar):
 
 if __name__ == '__main__':
     print("Добро пожаловать!")
-    bars = load_bars_data_from_json(input("Введите путь к json-файлу\n"))
+    bars = load_bars_from_json(input("Введите путь к json-файлу\n"))
     if bars:
         print("Самый большой бар : " + string_bar(get_biggest_bar(bars)))
         print("Самый маленький бар : " + string_bar(get_smallest_bar(bars)))
