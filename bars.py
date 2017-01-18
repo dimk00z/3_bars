@@ -1,5 +1,5 @@
 import json
-from os import replace, remove, path
+from os import path
 from math import radians, cos, sin, asin, sqrt
 
 EARTH_RADIUS = 6371
