@@ -12,23 +12,15 @@ def load_bars_data_from_json(json_file_name):
         return None
     with open(json_file_name, 'r', encoding='cp1251') as file_handler:
         json_file = json.load(file_handler)
-    bars = []
-    for j_object in json_file:
-        bars.append({'name': j_object['Name'],
-                     'address': j_object['Address'],
-                     'seats_count': j_object['SeatsCount'],
-                     'longitude': j_object['geoData']['coordinates'][0],
-                     'latitude': j_object['geoData']['coordinates'][1]
-                     })
-    return bars
+    return json_file
 
 
 def get_biggest_bar(bars):
-    return max(bars, key=lambda max_key: max_key['seats_count'])
+    return max(bars, key=lambda max_key: max_key['SeatsCount'])
 
 
 def get_smallest_bar(bars):
-    return min(bars, key=lambda min_key: min_key['seats_count'])
+    return min(bars, key=lambda min_key: min_key['SeatsCount'])
 
 
 def distance_between_points(lon1, lat1, lon2, lat2):
@@ -44,12 +36,13 @@ def distance_between_points(lon1, lat1, lon2, lat2):
 def get_closest_bar(bars, longitude, latitude):
     distance = distance_between_points(longitude,
                                        latitude,
-                                       bars[0]["longitude"],
-                                       bars[0]["latitude"])
+                                       bars[0]['geoData']['coordinates'][0],
+                                       bars[0]['geoData']['coordinates'][1])
     closest_bar = bars[0]
     for bar in bars[1:]:
         distance_to_bar = distance_between_points(
-            longitude, latitude, bar["longitude"], bar["latitude"])
+            longitude, latitude, bar['geoData']['coordinates'][0],
+            bar['geoData']['coordinates'][1])
         if distance_to_bar < distance:
             distance = distance_to_bar
             closest_bar = bar
@@ -58,11 +51,13 @@ def get_closest_bar(bars, longitude, latitude):
 
 def string_bar(bar):
     return (("{} с {} количеством посадочных мест по адресу {} \n" +
-             "широта: {}, долгота {}").format(bar["name"],
-                                              bar["seats_count"],
-                                              bar["address"],
-                                              str(bar["longitude"]),
-                                              str(bar["latitude"])))
+             "широта: {}, долгота {}").format(bar['Name'],
+                                              bar["SeatsCount"],
+                                              bar["Address"],
+                                              str(bar['geoData'][
+                                                  'coordinates'][0]),
+                                              str(bar['geoData'][
+                                                  'coordinates'][1])))
 
 
 if __name__ == '__main__':
@@ -85,5 +80,5 @@ if __name__ == '__main__':
                     print("Ближайший бар :" + string_bar(closest_bar))
                 except ValueError:
                     print("Ввод некорректен")
-        else:
-            print("Файл не найден")
+    else:
+        print("Файл не найден")
