@@ -2,8 +2,6 @@ import json
 from os import path
 from math import radians, cos, sin, asin, sqrt
 
-EARTH_RADIUS = 6371
-
 
 def load_bars_from_json(json_file_name):
     if not path.exists(json_file_name):
@@ -21,33 +19,28 @@ def get_smallest_bar(bars):
     return min(bars, key=lambda min_key: min_key['SeatsCount'])
 
 
-def distance_between_points(lon1, lat1, lon2, lat2):
-    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-    sub_result = sin(dlat / 2) ** 2 + cos(lat1) * \
-        cos(lat2) * sin(dlon / 2) ** 2
-    sub_result = 2 * asin(sqrt(sub_result))
-    return sub_result * EARTH_RADIUS
+def get_distance(longitude1, latitude1, longitude2, latitude2):
+    radius_of_the_earth = 6371
+    longitude1_in_radians, latitude1_in_radians, \
+        longitude2_in_radians, latitude2_in_radians = map(
+            radians, [longitude1, latitude1, longitude2, latitude2])
+    subtracting_latitudes = latitude2_in_radians - latitude1_in_radians
+    subtracting_longitudes = longitude2_in_radians - longitude1_in_radians
+    distance = sin((subtracting_latitudes) / 2) ** 2 + \
+        cos(latitude1_in_radians) * cos(latitude2_in_radians) * \
+        sin((subtracting_longitudes) / 2) ** 2
+    distance = 2 * asin(sqrt(distance))
+    return distance * radius_of_the_earth
 
 
 def get_closest_bar(bars, longitude, latitude):
-    distance = distance_between_points(longitude,
-                                       latitude,
-                                       bars[0]['geoData']['coordinates'][0],
-                                       bars[0]['geoData']['coordinates'][1])
-    closest_bar = bars[0]
-    for bar in bars[1:]:
-        distance_to_bar = distance_between_points(
-            longitude, latitude, bar['geoData']['coordinates'][0],
-            bar['geoData']['coordinates'][1])
-        if distance_to_bar < distance:
-            distance = distance_to_bar
-            closest_bar = bar
-    return closest_bar
+    return min(bars, key=lambda x:
+               get_distance(latitude, longitude,
+                            x['geoData']['coordinates'][1],
+                            x['geoData']['coordinates'][0]))
 
 
-def string_bar(bar):
+def get_string_bar(bar):
     string_bar = "{} с {} количеством посадочных мест по адресу {} \n \
 широта: {}, долгота {}"
     return (string_bar.format(bar['Name'], bar["SeatsCount"], bar["Address"],
@@ -55,26 +48,29 @@ def string_bar(bar):
                               str(bar['geoData']['coordinates'][1])))
 
 
-def closest_bar_print(bars):
-    answer = ""
-    while answer != "n":
-        try:
-            print("Поиск ближайшего бара:")
-            longitude = float(input("Введите долготу: "))
-            latitude = float(input("Введите широту: "))
-            closest_bar = get_closest_bar(bars, longitude, latitude)
-            print("Ближайший бар :" + string_bar(closest_bar))
-            answer = input("Следующий поиск? (y/n) :").lower()
-        except ValueError:
-            print("Ввод некорректен")
+def input_user_coordinates():
+    try:
+        print("Поиск ближайшего бара:")
+        longitude = float(input("Введите долготу: "))
+        latitude = float(input("Введите широту: "))
+        return longitude, latitude
+    except ValueError:
+        print("Ввод некорректен")
+        return None
 
 
 if __name__ == '__main__':
     print("Добро пожаловать!")
-    bars = load_bars_from_json(input("Введите путь к json-файлу\n"))
-    if bars:
-        print("Самый большой бар : " + string_bar(get_biggest_bar(bars)))
-        print("Самый маленький бар : " + string_bar(get_smallest_bar(bars)))
-        closest_bar_print(bars)
-    else:
-        print("Файл не найден")
+    json_file_name = input("Введите путь к json-файлу\n")
+    bars = load_bars_from_json(json_file_name)
+    if not bars:
+        print("Файл не найден {}".format(json_file_name))
+        exit()
+    print("Самый большой бар : " + get_string_bar(get_biggest_bar(bars)))
+    print("Самый маленький бар : " + get_string_bar(get_smallest_bar(bars)))
+    user_coordinates = input_user_coordinates()
+    if not user_coordinates:
+        exit()
+    closest_bar = get_closest_bar(bars, user_coordinates[0],
+                                  user_coordinates[1])
+    print("Ближайший бар :" + get_string_bar(closest_bar))
